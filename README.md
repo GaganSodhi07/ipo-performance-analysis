@@ -1,5 +1,5 @@
 # Two Decades of IPO Performance
-### Analyzing 2,237 US IPOs (2004–2024) using Python, KMeans Clustering & Random Forest
+### Analyzing 2,325 US IPOs (2004–2024) using Python, KMeans Clustering & Random Forest
 
 > **Built entirely in Google Colab · 100% free data · Fully reproducible**
 
@@ -7,7 +7,7 @@
 
 ## What This Project Does
 
-We used Python and machine learning to analyze every US IPO listed between 2004 and 2024 — 2,237 companies in total — and measured how each one performed against the S&P 500 using Buy-and-Hold Abnormal Return (BHAR).
+I used Python and machine learning to analyze every US IPO listed between 2004 and 2024 — 2,325 companies in total — and measured how each one performed against the S&P 500 using Buy-and-Hold Abnormal Return (BHAR).
 
 The goal: find patterns in IPO performance that are invisible to the naked eye but detectable through data.
 
@@ -17,14 +17,14 @@ The goal: find patterns in IPO performance that are invisible to the naked eye b
 
 | Finding | Number |
 |---|---|
-| Total IPOs analyzed | 2,237 |
+| Total IPOs analyzed | 2,325 |
 | Study period | 2004 – 2024 |
 | Benchmark | S&P 500 (^GSPC) |
 | IPOs still underperforming the index today | 72% |
-| Best cohort (2012) — mean 1-yr BHAR | +18% vs S&P 500 |
-| Worst cohort (2021) — mean 1-yr BHAR | −35% vs S&P 500 |
-| IPOs in the 2021 cohort alone | 1,035 |
-| Alpha Compounders median BHAR today | +1,711% |
+| Best cohort (2005) — mean 1-yr BHAR | +22% vs S&P 500 |
+| Worst complete cohort (2021) — mean 1-yr BHAR | −34% vs S&P 500 |
+| IPOs in the 2021 cohort | 404 |
+| Alpha Compounders median BHAR today | +2,047% |
 | Model F1 to detect Alpha Compounders at listing | 0.066 (near random) |
 | Listing-Day Reversals F1 at listing | 1.000 (perfectly identifiable) |
 
@@ -32,7 +32,7 @@ The goal: find patterns in IPO performance that are invisible to the naked eye b
 
 ## The Four IPO Archetypes (KMeans, k=4)
 
-Machine learning identified four natural performance archetypes from the return trajectory data — not predefined categories, but patterns the algorithm found on its own.
+I applied machine learning to identify four natural performance archetypes from the return trajectory data — not predefined categories, but patterns the algorithm found on its own.
 
 | Archetype | n | Median Listing Return | Median 1-yr BHAR | Median BHAR Today |
 |---|---|---|---|---|
@@ -41,9 +41,9 @@ Machine learning identified four natural performance archetypes from the return 
 | 🔴 Listing-Day Reversals | 19 | +134.2% | −71.6% | −178% |
 | ⚫ Chronic Underperformers | 1,613 | −0.8% | −39.5% | −180% |
 
-**The finding that surprised us most:**
+**The finding that surprised me most:**
 
-Alpha Compounders — the companies generating 2,000%+ lifetime returns — are statistically indistinguishable from Chronic Underperformers on listing day (F1 = 0.066). The future Googles looked exactly like the future Groupons when they listed. The algorithm couldn't separate them. Neither could the market.
+Alpha Compounders — the companies generating 2,000%+ lifetime returns — are statistically indistinguishable from Chronic Underperformers on listing day (F1 = 0.066). Google on listing day looked exactly like Groupon. The algorithm couldn't separate them. Neither could the market.
 
 ---
 
@@ -91,7 +91,7 @@ Calculated at: 30 days · 90 days · 1 year · 3 years · current date
 - Dependent variable: BHAR today
 - Independent variables: era dummies, listing return, VIX at listing
 - Baseline: 2012–2019 long-bull era
-- Cohort-level R²: 0.556 (annual means) — IPO vintage explains 55.6% of cohort performance variation
+- Cohort-level R²: 0.556 — IPO vintage explains 55.6% of cohort performance variation
 - Individual-level R²: 0.08 — individual outcomes remain largely unpredictable
 
 ---
@@ -114,24 +114,30 @@ Calculated at: 30 days · 90 days · 1 year · 3 years · current date
 ipo-performance-analysis/
 │
 ├── README.md
+├── requirements.txt
+├── ipo_complete_notebook.py        # Full pipeline — all 19 cells
 │
-├── notebooks/
-│   ├── 01_data_collection.ipynb       # NASDAQ API + yfinance pipeline
-│   ├── 02_bhar_calculation.ipynb      # BHAR at all time horizons
-│   ├── 03_kmeans_clustering.ipynb     # Elbow method + KMeans archetypes
-│   └── 04_random_forest.ipynb        # Classification + feature importance
+├── ipo_master.csv                  # 2,325 IPOs with all features
+├── ipo_clustered.csv               # With KMeans archetype labels
 │
-├── charts/
-│   ├── bubble_chart.png               # Mean BHAR by IPO year
-│   ├── trajectory_lines.png           # Return path by archetype
-│   ├── archetype_heatmap.png          # % archetype by era
-│   ├── feature_importance.png         # Random forest feature importance
-│   └── regression_era.png            # OLS era coefficients
-│
-├── data/
-│   └── ipo_master.csv                 # 2,237 IPOs with all features
-│
-└── requirements.txt
+├── bubble_chart_final.png          # Main LinkedIn visual
+├── trajectory_final.png            # Return path by archetype
+├── heatmap_final.png               # % archetype by era
+└── feature_importance_final.png    # Random forest feature importance
+```
+
+---
+
+## How to Run
+
+1. Open `ipo_complete_notebook.py` in [Google Colab](https://colab.research.google.com)
+2. Copy each cell block into a new Colab cell (remove outer triple quotes)
+3. Run cells 1–6 first to test with 21 known IPOs
+4. Run cell 7 for the full fetch (~45 mins for all 2,325 tickers)
+5. Run cells 8–19 for clustering, random forest, and all charts
+
+```bash
+git clone https://github.com/yourusername/ipo-performance-analysis
 ```
 
 ---
@@ -157,22 +163,9 @@ pip install -r requirements.txt
 
 ---
 
-## How to Run
-
-1. Clone this repo
-2. Open any notebook in [Google Colab](https://colab.research.google.com)
-3. Run cells in order — all data is fetched automatically, no downloads needed
-4. Full pipeline takes approximately 45 minutes for the complete 2,237-ticker fetch
-
-```bash
-git clone https://github.com/yourusername/ipo-performance-analysis
-```
-
----
-
 ## Limitations
 
-- NASDAQ screener captures currently-listed or recently-delisted tickers only — companies delisted more than several years ago may be under-represented (survivorship bias caveat)
+- NASDAQ screener captures currently-listed or recently-delisted tickers — companies delisted many years ago may be under-represented (survivorship bias caveat)
 - BHAR assumes continuous holding from listing — not a tradeable strategy
 - KMeans assigns hard cluster boundaries — real performance is a continuum
 - Individual-level R² of 0.08 confirms individual IPO outcomes are inherently unpredictable — cohort and era-level findings are more robust
@@ -184,7 +177,7 @@ git clone https://github.com/yourusername/ipo-performance-analysis
 If you use this work, please cite:
 
 ```
-IPO Performance Analysis: A Machine Learning Classification of 2,237 US IPOs (2004–2024)
+IPO Performance Analysis: A Machine Learning Classification of 2,325 US IPOs (2004–2024)
 GitHub: github.com/yourusername/ipo-performance-analysis
 June 2026
 ```
